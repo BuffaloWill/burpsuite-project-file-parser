@@ -13,7 +13,9 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 1. Compile the code provided or a pre-compiled jar included in the repo can also be used (`build/libs/burpsuite-project-file-parser-all.jar `)
 2. Install the extension in Burp
 3. ** Make sure to set the output to console **
+
 ![Set console output](output_to_console.png?raw=true)
+
 4. Close Burp Suite and follow examples below to parse the project file.
 
 # Example Usage
