@@ -10,7 +10,7 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 
 # Installation
 
-1. Compile the code provided or a pre-compiled version of the code can be used (`burpsuite-project-file-parser-all.jar`)
+1. Compile the code provided or a pre-compiled jar included in the repo can also be used (`build/libs/burpsuite-project-file-parser-all.jar `)
 2. Install the extension in Burp
 3. ** Make sure to set the output to console **
 ![Set console output](output_to_console.png?raw=true)
@@ -70,7 +70,23 @@ db.httpRequests.createIndex({hash:1},{unique:true})
 
 Insert the data into the DB:
 ```
-java -jar -Djava.awt.headless=true -Xmx3G ~/BurpSuitePro/burpsuite_pro.jar --user-config-file=/home/willis/PROJECTS/example_user_options.json --project-file=2019-12-10-Dec10.burp --storeData='localhost:27017/mydb'
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --storeData='localhost:27017/mydb'
+```
+
+# Suggestions
+
+- Use a custom User Options file (Burp > User options > Save user options) from Burp Suite with only this extension enabled. This can speed up Burp Suite loading speed because only one extension is loaded. Include the `--user-config-file` flag:
+```
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --user-config-file=[PATH TO CONFIG FILE]
+```
+
+- Set the max amount of memory used by burp with `-Xmx` flag:
+```
+java -jar -Djava.awt.headless=true -Xmx2G [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] 
+```
+
+```
+find [DIR TO SEARCH] -name *.burp | 
 ```
 
 # Build Information
