@@ -31,6 +31,14 @@ Use the `--auditItems` flag, for example:
 java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --auditItems 
 ```
 
+## Print site map and proxy history
+
+Combine the `--siteMap` and `--proxyHistory` flags to dump out all requests/responses from the site map and proxy history:
+
+```
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --siteMap --proxyHistory 
+```
+
 ## Search Response Headers using Regex
 
 Use the `--responseHeader=regex` flag. For example to search for any nginx or Servlet in response header:
@@ -45,7 +53,7 @@ java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[P
 
 ## Search Response Body using Regex
 
-Note, searching through a response body is memory expensive. It is recommended to use MongoDB and search through that. 
+Note, searching through a response body is memory expensive. It is recommended to store requests/responses in MongoDB and search that. 
 
 Use the `--responseBody=regex` flag. For example to search for `<form` elements in response bodies:
 ```
