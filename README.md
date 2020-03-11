@@ -12,7 +12,7 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 
 1. Compile the code provided or a pre-compiled jar included in the repo can also be used (`build/libs/burpsuite-project-file-parser-all.jar `)
 2. Install the extension in Burp
-3. ** Make sure to set the output to console **
+3. **Make sure to set the Output and Errors to system console**
 
 ![Set console output](output_to_console.png?raw=true)
 
@@ -93,10 +93,6 @@ java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[P
 - Set the max amount of memory used by burp with `-Xmx` flag:
 ```
 java -jar -Djava.awt.headless=true -Xmx2G [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] 
-```
-
-```
-find [DIR TO SEARCH] -name *.burp | 
 ```
 
 # Build Information
