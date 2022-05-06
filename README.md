@@ -21,9 +21,11 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 # Example Usage
 
 Notes:
-- Flags can be combined. For example, print audit items and site map; `--auditItems --siteMap`
+- Flags can be combined. For example, print audit items and site map; `auditItems siteMap`
 - `[PATH_TO burpsuite_pro.jar]` is required; my path is: `~/BurpSuitePro/burpsuite_pro.jar` if you need an example. 
 - `[PATH TO PROJECT FILE]` requires a project file and it's recommended to give the full path to the project file
+- You may need `--add-opens=java.desktop/javax.swing=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED` 
+depending on your version of Java
 
 ## Print Audit items
 
@@ -43,7 +45,7 @@ java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[P
 
 ## Search Response Headers using Regex
 
-Use the `--responseHeader=regex` flag. For example to search for any nginx or Servlet in response header:
+Use the `responseHeader=regex` flag. For example to search for any nginx or Servlet in response header:
 
 ```
 java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] responseHeader='.*(Servlet|nginx).*'
