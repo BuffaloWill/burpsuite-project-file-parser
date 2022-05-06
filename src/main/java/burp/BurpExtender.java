@@ -158,29 +158,30 @@ public class BurpExtender implements IBurpExtender
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
 
         // write a message to our output stream
-        stdout.println("{\"Message\":\"Loaded project file parser.\"}");
+        stdout.println("{\"Message\":\"Loaded project file parser; updated for burp 2022.\"}");
 
         // get CLI args
         List<String> cli = Arrays.asList(callbacks.getCommandLineArguments());
+        stdout.println(cli);
 
         // check if one of the possible flags is used and shutdown burp when done, otherwise ignore
         boolean proceed = false;
 
         // print the proxyHistory to stdout
-        if(cli.contains("--proxyHistory")) {
+        if(cli.contains("proxyHistory")) {
             proceed = true;
             IHttpRequestResponse[] history = callbacks.getProxyHistory();
             printHistory(stdout, callbacks, history);
         }
 
         // print the auditItems to stdout
-        if(cli.contains("--auditItems")) {
+        if(cli.contains("auditItems")) {
             proceed = true;
             printAuditItems(stdout, callbacks);
         }
 
         // print the siteMap to stdout
-        if(cli.contains("--siteMap")) {
+        if(cli.contains("siteMap")) {
             proceed = true;
             IHttpRequestResponse[] history = callbacks.getSiteMap(null);
             printHistory(stdout, callbacks, history);

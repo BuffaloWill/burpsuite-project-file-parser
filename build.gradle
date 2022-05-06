@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.portswigger.burp.extender:burp-extender-api:1.7.22'
+    compile 'net.portswigger.burp.extender:burp-extender-api:2.3'
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'org.mongodb:mongo-java-driver:3.10.2'
     compile 'org.mongodb:bson:3.10.2'

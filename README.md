@@ -27,18 +27,18 @@ Notes:
 
 ## Print Audit items
 
-Use the `--auditItems` flag, for example:
+Use the `auditItems` flag, for example:
 
 ```
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --auditItems 
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] auditItems 
 ```
 
 ## Print site map and proxy history
 
-Combine the `--siteMap` and `--proxyHistory` flags to dump out all requests/responses from the site map and proxy history:
+Combine the `siteMap` and `proxyHistory` flags to dump out all requests/responses from the site map and proxy history:
 
 ```
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --siteMap --proxyHistory 
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] siteMap proxyHistory 
 ```
 
 ## Search Response Headers using Regex
@@ -46,7 +46,7 @@ java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[P
 Use the `--responseHeader=regex` flag. For example to search for any nginx or Servlet in response header:
 
 ```
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --responseHeader='.*(Servlet|nginx).*'
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] responseHeader='.*(Servlet|nginx).*'
 ...
 {"url":"https://example.com/something.css","header":"x-powered-by: Servlet/3.0"}
 {"url":"https://spocs.getpocket.com:443/spocs","header":"Server: nginx"}
@@ -57,14 +57,14 @@ java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[P
 
 Note, searching through a response body is memory expensive. It is recommended to store requests/responses in MongoDB and search that. 
 
-Use the `--responseBody=regex` flag. For example to search for `<form` elements in response bodies:
+Use the `responseBody=regex` flag. For example to search for `<form` elements in response bodies:
 ```
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --responseBody='.*<form.*'
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] responseBody='.*<form.*'
 ```
 
 If you want to clean up the results to something more manageable (rather than the entire response), YMMV with a second grep pattern for the 80 characters around the match:
 ```
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --responseBody='.*<form.*'| grep -o -P -- "url\":.{0,100}|.{0,80}<form.{0,80}"
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] responseBody='.*<form.*'| grep -o -P -- "url\":.{0,100}|.{0,80}<form.{0,80}"
 ```
 
 ## Store the requests/responses to MongoDB
@@ -80,7 +80,7 @@ db.httpRequests.createIndex({hash:1},{unique:true})
 
 Insert the data into the DB:
 ```
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] --storeData='localhost:27017/mydb'
+java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] storeData='localhost:27017/mydb'
 ```
 
 # Suggestions
@@ -96,5 +96,19 @@ java -jar -Djava.awt.headless=true -Xmx2G [PATH_TO burpsuite_pro.jar] --project-
 ```
 
 # Build Information
-Run `gradle fatJar` from the root directory.
+
+## Option 1:
+Run `gradle fatJar` from the root directory. This expects you have gradle and all dependencies installed.
+
+## Option 2:
+Build the jar from the Dockerfile
+
+From the root directory of the project run:
+```bash
+mkdir tmp
+docker build -t burpsuite-project-file-parser .
+docker run --name burpsuite-project-file-parser -v [ADD THE FULLPATH TO YOUR CWD]/tmp:/tmp burpsuite-project-file-parser
+```
+
+The jar file should now be in the tmp directory.
 
