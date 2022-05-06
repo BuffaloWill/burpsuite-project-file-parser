@@ -10,7 +10,7 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 
 # Installation
 
-1. Compile the code provided or a pre-compiled jar included in the repo can also be used (`build/libs/burpsuite-project-file-parser-all.jar `)
+1. Compile the code as described in [Build Information](https://github.com/BuffaloWill/burpsuite-project-file-parser#build-information)
 2. Install the extension in Burp
 3. **Make sure to set the Output and Errors to system console**
 
@@ -101,14 +101,14 @@ java -jar -Djava.awt.headless=true -Xmx2G [PATH_TO burpsuite_pro.jar] --project-
 Run `gradle fatJar` from the root directory. This expects you have gradle and all dependencies installed.
 
 ## Option 2:
-Build the jar from the Dockerfile
+Build the jar from the Dockerfile.
 
 From the root directory of the project run:
 ```bash
-mkdir tmp
+mkdir build
 docker build -t burpsuite-project-file-parser .
-docker run --name burpsuite-project-file-parser -v [ADD THE FULLPATH TO YOUR CWD]/tmp:/tmp burpsuite-project-file-parser
+docker run --name burpsuite-project-file-parser -v [ADD THE FULLPATH TO YOUR CWD]/build:/tmp burpsuite-project-file-parser
 ```
 
-The jar file should now be in the tmp directory.
+The jar file should now be in the tmp directory of the project.
 
