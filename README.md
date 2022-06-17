@@ -8,6 +8,12 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 - Given a regex search the response headers or response bodies from the proxy history and site map
 - Store all requests/responses to a MongoDB
 
+# Blog Posts
+
+[Building an AppSec Pipeline with Burp Suite Data](https://www.silentrobots.com/building-an-appsec-pipeline-with-burpsuite-data/)
+
+[8 Bug Hunting Exampes with burpsuite-project-parser](https://www.silentrobots.com/pushing-burp-suite-data-into-your-testing-pipeline-part-2/)
+
 # Installation
 
 1. Compile the code as described in [Build Information](https://github.com/BuffaloWill/burpsuite-project-file-parser#build-information)
