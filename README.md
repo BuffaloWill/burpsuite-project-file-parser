@@ -8,6 +8,12 @@ burpsuite-project-file-parser is a Burp Suite extension to parse project files f
 - Given a regex search the response headers or response bodies from the proxy history and site map
 - Store all requests/responses to a MongoDB
 
+# Blog Posts
+
+[Building an AppSec Pipeline with Burp Suite Data](https://www.silentrobots.com/building-an-appsec-pipeline-with-burpsuite-data/)
+
+[8 Bug Hunting Exampes with burpsuite-project-parser](https://www.silentrobots.com/pushing-burp-suite-data-into-your-testing-pipeline-part-2/)
+
 # Installation
 
 1. Compile the code as described in [Build Information](https://github.com/BuffaloWill/burpsuite-project-file-parser#build-information)
@@ -112,5 +118,5 @@ docker build -t burpsuite-project-file-parser .
 docker run --name burpsuite-project-file-parser -v [ADD THE FULLPATH TO YOUR CWD]/build:/tmp burpsuite-project-file-parser
 ```
 
-The jar file should now be in the tmp directory of the project.
+The jar file should now be in the build directory of the project.
 
