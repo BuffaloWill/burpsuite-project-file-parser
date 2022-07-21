@@ -2,3 +2,6 @@
 build/
 .idea/
 gradle/
+test/
+Makefile
+tmp/

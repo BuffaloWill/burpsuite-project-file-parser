@@ -5,13 +5,14 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -52,30 +53,37 @@ public class BurpExtender implements IBurpExtender
 
     public jsonRequest requestToJson(String url, List<String> headers, String body){
         jsonRequest jr = new jsonRequest();
-        jr.url = url;
 
-        jr.method = headers.get(0).split(" ")[0];
-        jr.uri = headers.get(0).split(" ")[1];
-        jr.httpVersion = headers.get(0).split(" ")[2];
+        if(url.length() > 0) {
+            jr.url = url;
+        }
 
-        headers.remove(0);
-        jr.headers = headers;
+        if(headers.size() > 0) {
+            jr.method = headers.get(0).split(" ")[0];
+            jr.uri = headers.get(0).split(" ")[1];
+            jr.httpVersion = headers.get(0).split(" ")[2];
 
-        jr.body = body;
+            headers.remove(0);
+            jr.headers = headers;
+        }
 
+        if(body.length() > 0) {
+            jr.body = body;
+        }
         return jr;
     }
 
-    public jsonResponse responseToJson(String url, List<String> headers, String body){
+    public jsonResponse responseToJson(List<String> headers, String body){
         jsonResponse jr = new jsonResponse();
-        jr.url = url;
+        if(headers.size() > 0) {
+            jr.code = headers.get(0).split(" ")[1];
+            headers.remove(0);
+            jr.headers = headers;
+        }
 
-        jr.code = headers.get(0).split(" ")[1];
-
-        headers.remove(0);
-        jr.headers = headers;
-
-        jr.body = body;
+        if(body.length() > 0) {
+            jr.body = body;
+        }
 
         return jr;
     }
@@ -102,37 +110,107 @@ public class BurpExtender implements IBurpExtender
         }
     }
 
+    private HashMap<String, Boolean> determineHistoryFlags(List<String> cli){
+        // 🎵 I am not a Java programmer and a HashMap seems good enough.
+        //      If you have a better solution, PRRRRRRRR! 🎵
+
+        HashMap<String, Boolean> map = new HashMap<>();
+
+        if (cli.indexOf("proxyHistory") != -1 || cli.indexOf("siteMap") != -1) {
+            map.put("url", true);
+            map.put("request.headers", true);
+            map.put("request.body", true);
+            map.put("response.headers", true);
+            map.put("response.body", true);
+            return map;
+        }
+
+        // Always include the URL
+        map.put("url", true);
+
+        if (cli.contains("proxyHistory.request.headers")) {
+            map.put("request.headers", true);
+        }
+        if (cli.contains("proxyHistory.request.body")) {
+            map.put("request.body", true);
+        }
+        if (cli.contains("proxyHistory.response.headers")) {
+            map.put("response.headers", true);
+        }
+        if (cli.contains("proxyHistory.response.body")) {
+            map.put("response.body", true);
+        }
+
+        if (cli.contains("siteMap.request.headers")) {
+            map.put("request.headers", true);
+        }
+        if (cli.contains("siteMap.request.body")) {
+            map.put("request.body", true);
+        }
+        if (cli.contains("siteMap.response.headers")) {
+            map.put("response.headers", true);
+        }
+        if (cli.contains("siteMap.response.body")) {
+            map.put("response.body", true);
+        }
+
+        return map;
+    }
+
     // taken in a request response history and print out the results
-    public void printHistory(PrintWriter stdout, IBurpExtenderCallbacks callbacks, IHttpRequestResponse[] history){
+    public void printHistory(PrintWriter stdout, IBurpExtenderCallbacks callbacks, IHttpRequestResponse[] history, List<String> cli){
+        HashMap<String, Boolean> map = determineHistoryFlags(cli);
+
         for (IHttpRequestResponse req : history) {
             try {
                 IRequestInfo rInfo = callbacks.getHelpers().analyzeRequest(req.getRequest());
 
                 // URL from request
-                String url = req.getHttpService().getProtocol() + "://" + req.getHttpService().getHost() + ":" + req.getHttpService().getPort();
-                String uriR = rInfo.getHeaders().get(0).split(" ")[1];
-                url = url+uriR;
+                String url = "";
+                if (map.containsKey("url") == true) {
+                    url = req.getHttpService().getProtocol() + "://" + req.getHttpService().getHost() + ":" + req.getHttpService().getPort();
+                    String uriR = rInfo.getHeaders().get(0).split(" ")[1];
+                    url = url + uriR;
+                }
 
                 // Headers from request
-                List<String> headers = rInfo.getHeaders();
+                List<String> headers = new ArrayList<String>();
+                if (map.containsKey("request.headers") == true) {
+                    headers = rInfo.getHeaders();
+                }
 
                 // Body from request
-                byte[] bodyl = Arrays.copyOfRange(req.getRequest(), rInfo.getBodyOffset(), req.getRequest().length);
-                String body = callbacks.getHelpers().bytesToString(bodyl);
-
+                String body = "";
+                if (map.containsKey("request.body") == true) {
+                    byte[] bodyl = Arrays.copyOfRange(req.getRequest(), rInfo.getBodyOffset(), req.getRequest().length);
+                    body = callbacks.getHelpers().bytesToString(bodyl);
+                }
                 jsonRequest gr = requestToJson(url, headers, body);
 
-                //get the response
-                IResponseInfo rResp = callbacks.getHelpers().analyzeResponse(req.getResponse());
+                List<String> headers1 = new ArrayList<String>();
+                String bodyR1 = "";
+                if (map.containsKey("response.headers") == true || map.containsKey("response.body") == true ) {
 
-                // Headers from response
-                List<String> headers1 = rResp.getHeaders();
+                    // If a response was null it needs to be caught in this try/catch
+                    try{
+                        IResponseInfo rResp = callbacks.getHelpers().analyzeResponse(req.getResponse());
+                        if (map.containsKey("response.headers") == true) {
+                            // Headers from response
+                            headers1 = rResp.getHeaders();
+                        }
+                        if (map.containsKey("response.body") == true) {
+                            // Body from response
+                            byte[] bodyR = Arrays.copyOfRange(req.getResponse(), rResp.getBodyOffset(), req.getResponse().length);
+                            bodyR1 = callbacks.getHelpers().bytesToString(bodyR);
+                        }
+                    } catch (Exception e) {
+                        if (e.getMessage() == "Response cannot be null"){
+                            bodyR1 = "NULL";
+                        }
+                    }
+                }
 
-                // Body from response
-                byte[] bodyR = Arrays.copyOfRange(req.getResponse(), rResp.getBodyOffset(), req.getResponse().length);
-                String bodyR1 = callbacks.getHelpers().bytesToString(bodyR);
-
-                jsonResponse gr1 = responseToJson(url, headers1, bodyR1);
+                jsonResponse gr1 = responseToJson(headers1, bodyR1);
                 jsonRequestResponse jrr = new jsonRequestResponse();
                 jrr.request = gr;
                 jrr.response = gr1;
@@ -142,6 +220,7 @@ public class BurpExtender implements IBurpExtender
 
                 stdout.println(reqJson);
             } catch (Exception e) {
+                //e.printStackTrace(System.out);
                 stdout.println(e.getMessage());
             }
         }
@@ -158,7 +237,6 @@ public class BurpExtender implements IBurpExtender
         PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
 
         // write a message to our output stream
-        stdout.println("{\"Message\":\"Loaded project file parser; updated for burp 2022.\"}");
 
         // get CLI args
         List<String> cli = Arrays.asList(callbacks.getCommandLineArguments());
@@ -167,11 +245,23 @@ public class BurpExtender implements IBurpExtender
         // check if one of the possible flags is used and shutdown burp when done, otherwise ignore
         boolean proceed = false;
 
+        // Exit if the flag is not recognized
+        if(!(cli.contains("auditItems") ||
+                cli.stream().anyMatch(n -> n.toString().contains("proxyHistory")) ||
+                cli.stream().anyMatch(n -> n.toString().contains("siteMap")) ||
+                cli.contains("responseMap") ||
+                cli.contains("responseBody") ||
+                cli.contains("storeData"))){
+            stdout.println("{\"Message\":\"Unrecognized flag\"}");
+            // Close down burpsuite only if this extension was used
+            callbacks.exitSuite(false);
+        }
+
         // print the proxyHistory to stdout
-        if(cli.contains("proxyHistory")) {
+        if(cli.stream().anyMatch(n -> n.toString().contains("proxyHistory"))) {
             proceed = true;
             IHttpRequestResponse[] history = callbacks.getProxyHistory();
-            printHistory(stdout, callbacks, history);
+            printHistory(stdout, callbacks, history, cli);
         }
 
         // print the auditItems to stdout
@@ -181,10 +271,10 @@ public class BurpExtender implements IBurpExtender
         }
 
         // print the siteMap to stdout
-        if(cli.contains("siteMap")) {
+        if(cli.stream().anyMatch(n -> n.toString().contains("siteMap"))) {
             proceed = true;
             IHttpRequestResponse[] history = callbacks.getSiteMap(null);
-            printHistory(stdout, callbacks, history);
+            printHistory(stdout, callbacks, history, cli);
         }
 
         // search all responseHeaders or responseBodies with a regex
