@@ -252,9 +252,9 @@ public class BurpExtender implements IBurpExtender
                 cli.contains("responseMap") ||
                 cli.contains("responseBody") ||
                 cli.contains("storeData"))){
+
             stdout.println("{\"Message\":\"Unrecognized flag\"}");
             // Close down burpsuite only if this extension was used
-            callbacks.exitSuite(false);
         }
 
         // print the proxyHistory to stdout
