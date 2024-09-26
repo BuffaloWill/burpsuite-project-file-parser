@@ -1,12 +1,14 @@
 # Overview
 
-burpsuite-project-file-parser is a Burp Suite extension to parse project files from the command line and output the results as JSON. It uses the Extender API so it should be cleanly compatible with most versions of Burp. Given a project file this can:
+burpsuite-project-file-parser is a Burp Suite extension to parse project files 
+from the command line and output the results as JSON. 
+It uses the Montoya Extender API so it should be cleanly compatible with most versions of Burp. 
+Given a project file this can:
 
 - Print all Audit Items 
 - Print all requests/responses from the proxy history
 - Print all requests/responses from the site map
 - Given a regex search the response headers or response bodies from the proxy history and site map
-- Store all requests/responses to a MongoDB
 
 # Blog Posts
 
@@ -85,7 +87,7 @@ java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[P
 
 ## Search Response Body using Regex
 
-Note, searching through a response body is memory expensive. It is recommended to store requests/responses in MongoDB and search that. 
+Note, searching through a response body is memory expensive. It is recommended to store requests/responses and search that. 
 
 Use the `responseBody=regex` flag. For example to search for `<form` elements in response bodies:
 ```bash
@@ -97,23 +99,6 @@ If you want to clean up the results to something more manageable (rather than th
 ```bash
 java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] \
   responseBody='.*<form.*'| grep -o -P -- "url\":.{0,100}|.{0,80}<form.{0,80}"
-```
-
-## Store the requests/responses to MongoDB
-
-Initialize the collections with a unique index in the db; run the following commands in mongodb:
-
-```bash
-use [DATABASE NAME]
-db.urls.createIndex({url:1},{unique:true})
-db.httpResponses.createIndex({hash:1},{unique:true})
-db.httpRequests.createIndex({hash:1},{unique:true})
-```
-
-Insert the data into the DB:
-```bash
-java -jar -Djava.awt.headless=true [PATH_TO burpsuite_pro.jar] --project-file=[PATH TO PROJECT FILE] \
-  storeData='localhost:27017/mydb'
 ```
 
 # Suggestions

@@ -6,17 +6,26 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation 'net.portswigger.burp.extender:burp-extender-api:2.3'
-    implementation 'com.google.code.gson:gson:2.8.2'
-    implementation 'org.mongodb:mongo-java-driver:3.10.2'
-    implementation 'org.mongodb:bson:3.10.2'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
-task fatJar(type: Jar) {
-    baseName = project.name + '-all'
-    duplicatesStrategy = 'exclude'
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+dependencies {
+    implementation 'net.portswigger.burp.extensions:montoya-api:2024.7'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
