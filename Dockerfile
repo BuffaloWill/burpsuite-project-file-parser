@@ -1,9 +1,9 @@
-FROM gradle:4.7.0-jdk8-alpine AS build
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
-RUN gradle fatJar
+FROM gradle:8.1.1-jdk17 AS build
+WORKDIR /app
+COPY --chown=gradle:gradle . /app
+RUN gradle build --no-daemon
 
-FROM openjdk:8-jre-slim
-RUN mkdir /app
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/burp-plugin.jar
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar ./burp-plugin.jar
 ENTRYPOINT ["cp","/app/burp-plugin.jar","/tmp/burpsuite-project-file-parser-all.jar"]
