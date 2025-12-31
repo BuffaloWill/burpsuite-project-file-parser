@@ -130,3 +130,13 @@ docker run --name burpsuite-project-file-parser -v [ADD THE FULLPATH TO YOUR CWD
 
 The jar file should now be in the build directory of the project.
 
+# Running Tests
+
+Unit tests can be run using Docker/Podman:
+
+```bash
+docker build -f Dockerfile.test -t burpsuite-parser-test .
+```
+
+The tests run automatically during the build. A successful build indicates all tests passed.
+

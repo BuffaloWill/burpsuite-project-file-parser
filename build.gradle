@@ -15,6 +15,13 @@ java {
 dependencies {
     implementation 'net.portswigger.burp.extensions:montoya-api:2024.7'
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaCompile) {

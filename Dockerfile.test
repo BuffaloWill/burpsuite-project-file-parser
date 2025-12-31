@@ -1,0 +1,9 @@
+FROM gradle:8.11-jdk17
+
+WORKDIR /app
+
+COPY --chown=gradle:gradle . /app
+
+RUN gradle test --no-daemon
+
+CMD ["gradle", "test", "--no-daemon"]

@@ -222,7 +222,8 @@ public class BurpExtender implements BurpExtension {
         logging.logToOutput(json);
     }
 
-    private boolean contains(String[] args, String flag) {
+    // Package-private for testing
+    boolean contains(String[] args, String flag) {
         for (String arg : args) {
             if (arg.contains(flag)) {
                 return true;
@@ -231,7 +232,8 @@ public class BurpExtender implements BurpExtension {
         return false;
     }
 
-    private boolean containsAny(String[] args, String... flags) {
+    // Package-private for testing
+    boolean containsAny(String[] args, String... flags) {
         for (String flag : flags) {
             if (contains(args, flag)) {
                 return true;
