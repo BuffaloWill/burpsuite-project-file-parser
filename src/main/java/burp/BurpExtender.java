@@ -16,9 +16,6 @@ import burp.api.montoya.sitemap.SiteMap;
 import burp.api.montoya.ui.UserInterface;
 import com.google.gson.*;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +39,9 @@ public class BurpExtender implements BurpExtension {
         this.userInterface = api.userInterface();
 
         api.extension().setName("BurpSuite Project File Parser");
+        api.extension().registerUnloadingHandler(() -> {
+            // Extension cleanup - no resources to release in this extension
+        });
 
         String[] args = api.burpSuite().commandLineArguments().toArray(new String[0]);
         logging.logToOutput(String.join(" ", args));
@@ -175,9 +175,8 @@ public class BurpExtender implements BurpExtension {
 
     private void processResponses(boolean responseHeader, boolean responseBody, String regex) {
         Pattern pattern = Pattern.compile(regex);
-        List<ProxyHttpRequestResponse> allProxyRequests = new ArrayList<>(proxy.history());
 
-        for (ProxyHttpRequestResponse reqRes : allProxyRequests) {
+        for (ProxyHttpRequestResponse reqRes : proxy.history()) {
             try {
                 if (reqRes.response() == null) continue;
 
@@ -188,14 +187,20 @@ public class BurpExtender implements BurpExtension {
                 if (responseHeader) {
                     for (HttpHeader header : responseHeaders) {
                         if (pattern.matcher(header.toString()).find()) {
-                            logging.logToOutput("{\"url\":\"" + url + "\",\"header\":\"" + header.toString() + "\"}");
+                            JsonObject output = new JsonObject();
+                            output.addProperty("url", url);
+                            output.addProperty("header", header.toString());
+                            logging.logToOutput(output.toString());
                         }
                     }
                 }
 
                 if (responseBody) {
                     if (pattern.matcher(responseBodyStr).find()) {
-                        logging.logToOutput("{\"url\":\"" + url + "\",\"body\":" + responseBodyStr + "}");
+                        JsonObject output = new JsonObject();
+                        output.addProperty("url", url);
+                        output.addProperty("body", responseBodyStr);
+                        logging.logToOutput(output.toString());
                     }
                 }
 
